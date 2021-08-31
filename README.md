@@ -7,3 +7,14 @@
 5. Change ```index.js``` content (follow auth0 docs)
 6. Fill in the TODOs in the following component:
    - ```App.js```
+
+
+
+
+
+
+
+
+
+
+
