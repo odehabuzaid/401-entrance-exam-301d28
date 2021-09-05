@@ -2,7 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { withAuth0 } from '@auth0/auth0-react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
 import CryptoItems from './CryptoItems';
 class Home extends React.Component {
   constructor( props ) {
@@ -24,7 +24,7 @@ class Home extends React.Component {
         this.setState( {
           apiData: response.data,
         } );
-        console.log( this.state.apiData );
+        console.log( 'api data', this.state.apiData );
       } )
       .catch( ( err ) => err );
   };
@@ -34,12 +34,14 @@ class Home extends React.Component {
       <>
         <Container fluid>
           <Row>
-            <Col>
-              {this.state.apiData.length > 0 &&
-                this.state.apiData.map( ( item, index ) => (
-                  <CryptoItems item={item} key={index} />
-                ) )}
-            </Col>
+            {this.state.apiData.length > 0 &&
+              this.state.apiData.map( ( item, index ) => (
+                <CryptoItems
+                  item={item}
+                  key={index}
+                  componentDidMount={this.componentDidMount}
+                />
+              ) )}
           </Row>
         </Container>
       </>

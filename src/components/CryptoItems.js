@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import { Col, Card, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { withAuth0 } from '@auth0/auth0-react';
+import swal from 'sweetalert';
 class CryptoItems extends Component {
-
-
-
-  addToFavorite = ( item ) => {
+  addToFavorite = ( item, componentDidMount ) => {
     const { title, description, toUSD, image_url } = item;
     let email = this.props.auth0.user.email;
     const requestConfig = {
@@ -17,17 +15,25 @@ class CryptoItems extends Component {
     };
     axios( requestConfig )
       .then( ( response ) => {
-        alert( response.data );
+        swal( {
+          position: 'top-end',
+          icon: 'success',
+          title: response.data,
+          Button: false,
+          timer: 1500,
+        } );
+        componentDidMount();
+        this.forceUpdate();
       } )
       .catch( ( err ) => err );
   };
 
   render() {
-    const { item } = this.props;
+    const { item, componentDidMount } = this.props;
     return (
       <>
-        <Col style={{ padding: '10px' }}>
-          <Card style={{ width: '18rem' }}>
+        <Col style={{ padding: '5px' }}>
+          <Card className='shadow' style={{ width: '18rem' }}>
             <Card.Body>
               <Card.Title>{item.title}</Card.Title>
               <Card.Img src={item.image_url} alt={item.title} />
@@ -36,9 +42,9 @@ class CryptoItems extends Component {
               <Card.Footer>
                 <Button
                   variant='warning'
-                  onClick={() => this.addToFavorite( item )}
+                  onClick={() => this.addToFavorite( item, componentDidMount )}
                 >
-                  Favorite ❤️
+                  add-to-watchlist ➕
                 </Button>
               </Card.Footer>
             </Card.Body>

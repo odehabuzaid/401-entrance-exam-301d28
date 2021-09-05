@@ -1,24 +1,35 @@
 import React, { Component } from 'react';
 import { Col, Card, Button, Modal, Form, FormGroup } from 'react-bootstrap';
 import axios from 'axios';
-
+import swal from 'sweetalert';
 class FavItem extends Component {
   constructor( props ) {
     super( props );
     this.state = {
       showModal: false,
-    };
-  }
-  editModal = () => {
-    this.setState( {
-      showModal: true,
       title: '',
       toUSD: '',
       sImage: '',
+      index: '',
+    };
+  }
+  editModal = ( title, toUSD, image_url, description, index ) => {
+    this.setState( {
+      showModal: true,
+      title: title,
+      toUSD: toUSD,
+      sImage: image_url,
+      description: description,
+      index: index,
     } );
   };
 
-  deleteFavItem = ( index, id ) => {
+  handleValueChange = ( e ) => {
+    const { name, value } = e.target;
+    this.setState( { [name]: value } );
+  };
+
+  deleteFavItem = ( index, id, componentDidMount ) => {
     const requestConfig = {
       method: 'delete',
       baseURL: process.env.REACT_APP_API_SERVER,
@@ -27,22 +38,59 @@ class FavItem extends Component {
     };
     axios( requestConfig )
       .then( ( response ) => {
-        alert( response.data );
+        swal( {
+          position: 'top-end',
+          icon: 'success',
+          title: response.data,
+          Button: false,
+          timer: 1500,
+        } );
+        componentDidMount();
+        this.forceUpdate();
       } )
       .catch( ( err ) => err );
   };
 
   closeUpdateModal = () => {
-    this.state( {
+    this.setState( {
       showModal: false,
     } );
   };
 
+  updateFav = ( id, componentDidMount ) => {
+    const requestConfig = {
+      method: 'put',
+      baseURL: process.env.REACT_APP_API_SERVER,
+      url: `/updateFav/${id}`,
+      params: {
+        title: this.state.title,
+        description: this.state.description,
+        toUSD: this.state.toUSD,
+        image: this.state.sImage,
+        index: this.state.index,
+      },
+    };
+    axios( requestConfig )
+      .then( ( response ) => {
+        swal( {
+          position: 'top-end',
+          icon: 'success',
+          title: response.data,
+          Button: false,
+          timer: 1500,
+        } );
+        componentDidMount();
+        this.forceUpdate();
+        this.closeUpdateModal();
+      } )
+      .catch( ( err ) => err );
+  };
+
   render() {
-    const { item, index, id, handlechange, updateFav } = this.props;
+    const { item, index, id, componentDidMount } = this.props;
     return (
-      <Col style={{ padding: '10px' }}>
-        <Card style={{ width: '18rem' }}>
+      <Col style={{ padding: '5px' }}>
+        <Card className='shadow' style={{ width: '18rem' }}>
           <Card.Body>
             <Card.Title>{item.title}</Card.Title>
             <Card.Img src={item.image} alt={item.title} />
@@ -52,7 +100,13 @@ class FavItem extends Component {
               <Button
                 variant='warning'
                 onClick={() =>
-                  this.editModal( item.title, item.toUSD, item.image_url, index )
+                  this.editModal(
+                    item.title,
+                    item.toUSD,
+                    item.image,
+                    item.description,
+                    index,
+                  )
                 }
               >
                 Edit ✏️
@@ -60,14 +114,14 @@ class FavItem extends Component {
               {'  '}
               <Button
                 variant='warning'
-                onClick={() => this.deleteFavItem( index, id )}
+                onClick={() => this.deleteFavItem( index, id, componentDidMount )}
               >
                 delete ❌
               </Button>
             </Card.Footer>
           </Card.Body>
         </Card>
-        <Modal show={this.state.show} onHide={this.closeUpdateModal}>
+        <Modal show={this.state.showModal} onHide={this.closeUpdateModal}>
           <Modal.Header>
             <Modal.Title> Update Fav </Modal.Title>
           </Modal.Header>
@@ -78,7 +132,7 @@ class FavItem extends Component {
                 <Form.Control
                   className='md-4'
                   placeholder='item Title'
-                  onChange={handlechange}
+                  onChange={( e ) => this.handleValueChange( e )}
                   type='text'
                   name='title'
                   value={this.state.title}
@@ -88,7 +142,7 @@ class FavItem extends Component {
                 <Form.Control
                   className='md-4'
                   placeholder='item Description'
-                  onChange={handlechange}
+                  onChange={( e ) => this.handleValueChange( e )}
                   type='text'
                   name='toUSD'
                   value={this.state.toUSD}
@@ -97,9 +151,9 @@ class FavItem extends Component {
                 <Form.Label style={{ marginBottom: '10px' }}>image</Form.Label>
                 <Form.Control
                   className='md-4'
-                  name='image'
+                  name='sImage'
                   placeholder='item Description'
-                  onChange={handlechange}
+                  onChange={( e ) => this.handleValueChange( e )}
                   type='text'
                   value={this.state.sImage}
                   id='descriptionInput'
@@ -113,7 +167,7 @@ class FavItem extends Component {
               variant='success'
               className='mr-1'
               style={{ margin: '10px' }}
-              onClick={() => updateFav()}
+              onClick={() => this.updateFav( id, componentDidMount )}
             >
               Update
             </Button>

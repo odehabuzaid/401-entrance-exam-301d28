@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import FavItem from './FavItem';
 import { withAuth0 } from '@auth0/auth0-react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row} from 'react-bootstrap';
 
 class FavCrypto extends React.Component {
   constructor( props ) {
@@ -32,29 +32,23 @@ class FavCrypto extends React.Component {
       .catch( ( err ) => err );
   };
 
-  handleValueChange = ( e ) => {
-    const { name, value } = e.target;
-    this.setState( { [name]: value } );
-  };
-
   render() {
     return (
       <>
         <Container fluid>
           <Row>
-            <Col>
-              {this.state.favItems.length > 0 &&
-                this.state.favItems.map( ( item, index ) => (
-                  <FavItem
-                    item={item}
-                    key={index}
-                    index={index}
-                    id={this.state.favData._id}
-                    handlechange={this.handleValueChange}
-                    updateFav={this.updateFav}
-                  />
-                ) )}
-            </Col>
+            {this.state.favItems.length > 0 &&
+              this.state.favItems.map( ( item, index ) => (
+                <FavItem
+                  item={item}
+                  key={index}
+                  index={index}
+                  id={this.state.favData._id}
+                  handlechange={this.handleValueChange}
+                  updateFav={this.updateFav}
+                  componentDidMount={this.componentDidMount}
+                />
+              ) )}
           </Row>
         </Container>
       </>
